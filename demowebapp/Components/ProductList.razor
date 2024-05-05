@@ -27,6 +27,8 @@
     </div>
 </div>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 @if (selectedProduct != null)
 {
     <div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="productTitle" aria-hidden="true">
@@ -48,6 +50,27 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    @if (voteCount == 0)
+                    {
+                        <span>Be the first to vote!</span>
+                    }
+                    else
+                    {
+                        <span>@voteCount @voteLabel</span>
+                    }
+
+                    @for (int i = 0; i < 6; i++)
+                    {
+                        var currentStar = i;
+                        if (i <= currentRaiting)
+                        {
+                            <span class="fa-star fa checked" @onclick="(e => SubmitRating(currentStar))"></span>
+                        }
+                        else
+                        {
+                            <span class="fa-star fa" @onclick="(e => SubmitRating(currentStar))"></span>
+                        }
+                    }
                 </div>
             </div>
         </div>
@@ -62,6 +85,35 @@
     {
         selectProductId = productId;
         selectedProduct = ProductService.GetProducts().FirstOrDefault<Product>(p => p.Id == selectProductId);
+        GetCurrentRating();
+    }
+
+    int currentRaiting = 0;
+    int voteCount = 0;
+    string voteLabel;
+
+    void GetCurrentRating()
+    {
+        if(selectedProduct.Rating == null)
+        {
+            currentRaiting = 0;
+            voteCount = 0;
+        }
+        else
+        {
+            voteCount = selectedProduct.Rating.Count();
+            voteLabel = voteCount > 1 ? "Votes" : "Vote";
+            currentRaiting = selectedProduct.Rating.Sum() / voteCount;
+        }
+
+        System.Console.WriteLine($"Current rating for {selectedProduct.Id}: {currentRaiting}");
+    }
+
+    void SubmitRating(int rating)
+    {
+        System.Console.WriteLine($"Rating recieved for {selectedProduct.Id}: {rating}");
+        ProductService.AddRating(selectProductId, rating);
+        SelectProduct(selectProductId);
     }
 }
 
