@@ -1,4 +1,5 @@
 ﻿@page
+@using demowebapp.Components
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
@@ -13,17 +14,10 @@
 @*to use variable on html we must add @ in front of variable such as @variable*@
 @*the way to use for loop we can use on cshtml by @for*@
 
-<div class="container ">
-    <div class="row row-cols-4 g-2 card-columns">
-        @foreach (var product in Model.Products)
-        {
-            <div class="card">
-                <div class="card-img" style="background-image: url('@product.Image');">
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">@product.Title</h5>
-                </div>
-            </div>
-        }
-    </div>
-</div>
+@*to use blazor component we must initial on program.cs service.AddServerSideBlazor(), app.MapBlazorHub() or endpoint.MapBlazorHub() it depend hosting model*@
+@*and the way to use blazor component we must declare use script on _framework/blazor.server.js*@
+
+
+@(await Html.RenderComponentAsync<ProductList>(RenderMode.ServerPrerendered))
+
+<script src="_framework/blazor.server.js"></script>

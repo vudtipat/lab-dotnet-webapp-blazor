@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
+builder.Services.AddServerSideBlazor();
 builder.Services.AddTransient<JsonFileProductService>();
 
 var app = builder.Build();
@@ -25,8 +26,8 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
-
 app.MapControllers();
+app.MapBlazorHub();
 
 app.Run();
 
