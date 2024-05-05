@@ -29,6 +29,36 @@ namespace demowebapp.Services
 					});
 			}
 		}
+
+		public void AddRating(string productId,int rating)
+		{
+			var products = GetProducts();
+
+			var query = products.FirstOrDefault(p => p.Id == productId);
+
+			if(query.Rating == null)
+			{
+				query.Rating = new int[] { rating };
+			}
+			else
+			{
+				var ratings = query.Rating.ToList();
+				ratings.Add(rating);
+				query.Rating = ratings.ToArray();
+			}
+
+			using(var outputstream = File.OpenWrite(JsonFileName))
+			{
+				JsonSerializer.Serialize<IEnumerable<Product>>(
+						new Utf8JsonWriter(outputstream, new JsonWriterOptions
+						{
+							SkipValidation = true,
+							Indented = true
+						}),
+						products
+					);
+			}
+		}
 	}
 }
 
