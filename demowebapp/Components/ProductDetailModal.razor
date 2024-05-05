@@ -1,0 +1,91 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@using demowebapp.Models
+@using demowebapp.Services
+@inject JsonFileProductService ProductService
+
+@if (selectedProduct != null)
+{
+    <div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="productTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productTitle">@selectedProduct.Title</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="card-img" style="background-image: url('@selectedProduct.Image');">
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">@selectedProduct.Description</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    @if (voteCount == 0)
+                    {
+                        <span>Be the first to vote!</span>
+                    }
+                    else
+                    {
+                        <span>@voteCount @voteLabel</span>
+                    }
+
+                    @for (int i = 0; i < 6; i++)
+                    {
+                        var currentStar = i;
+                        if (i <= currentRaiting)
+                        {
+                            <span class="fa-star fa checked" @onclick="(e => SubmitRating(currentStar))"></span>
+                        }
+                        else
+                        {
+                            <span class="fa-star fa" @onclick="(e => SubmitRating(currentStar))"></span>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    public Product selectedProduct;
+    public string selectProductId;
+    int currentRaiting = 0;
+    int voteCount = 0;
+    string voteLabel;
+
+    //the way to call parent method we must call by create paramteter ans pass method by ise param that we declare
+    //EventCallback<T> T is the type that param method and when we will use we can use by param.InvokeAsync(paramtosendvalue)
+
+    [Parameter]
+    public EventCallback<string> onCallParentMethodProp { get; set; }
+
+    public void GetCurrentRating()
+    {
+        if (selectedProduct.Rating == null)
+        {
+            currentRaiting = 0;
+            voteCount = 0;
+        }
+        else
+        {
+            voteCount = selectedProduct.Rating.Count();
+            voteLabel = voteCount > 1 ? "Votes" : "Vote";
+            currentRaiting = selectedProduct.Rating.Sum() / voteCount;
+        }
+
+        System.Console.WriteLine($"Current rating for {selectedProduct.Id}: {currentRaiting}");
+    }
+
+    void SubmitRating(int rating)
+    {
+        System.Console.WriteLine($"Rating recieved for {selectedProduct.Id}: {rating}");
+        ProductService.AddRating(selectProductId, rating);
+        onCallParentMethodProp.InvokeAsync(selectProductId);
+    }
+}
+
