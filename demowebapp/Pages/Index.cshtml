@@ -10,8 +10,20 @@
 </div>
 
 @*to access data from code behind we must use Model.VariableName*@
+@*to use variable on html we must add @ in front of variable such as @variable*@
+@*the way to use for loop we can use on cshtml by @for*@
 
-@foreach(var product in Model.Products)
-{
-    <h2>@product.Title</h2>
-}
+<div class="container ">
+    <div class="row row-cols-4 g-2 card-columns">
+        @foreach (var product in Model.Products)
+        {
+            <div class="card">
+                <div class="card-img" style="background-image: url('@product.Image');">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">@product.Title</h5>
+                </div>
+            </div>
+        }
+    </div>
+</div>
